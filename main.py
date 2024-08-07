@@ -5,6 +5,7 @@ os.system('cls' if os.name == 'nt' else 'clear')
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+
 with open("./config.json", "r") as f:
     config = json.load(f)
 
@@ -33,6 +34,6 @@ if __name__ == "__main__":
 
         # Logging
         time_log["ready"] = round(time.time() - time_log["start"], 4)
-        print(f"Bot is up and running as {bot.user} after {time_log['ready']} seconds")
+        print(f"Bot is online as {bot.user}, startup took {time_log['ready']} seconds")
     
     bot.run(TOKEN)
