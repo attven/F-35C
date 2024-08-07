@@ -14,17 +14,17 @@ To get started, simply click **Use this template**, and select either **Open in 
 Features that are enabled by default, which does not require modifying the codebase. **May still require a simple setup to work accordingly on servers**.
 
 - Basic security
-  * Flag addition of unverified bots
+  - Flag addition of unverified bots
 - Basic global economy
-  * Claim daily cash
-  * Transfer cash to other users
-  * Farm Bitcoin (for cash)
+  - Claim daily cash
+  - Transfer cash to other users
+  - Farm Bitcoin (for cash)
 - Welcome messages to new users
 - Get random pictures
-  * cats
-  * dogs
-  * hamsters
-  * http cat
+  - cats
+  - dogs
+  - hamsters
+  - http cat
 
 ### Optional
 
