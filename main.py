@@ -10,7 +10,7 @@ with open("./config.json", "r") as f:
     config = json.load(f)
 
 if __name__ == "__main__":
-    print(f"Working directory: {os.getcwd()}")
+    print(f"pwd: {os.getcwd()}")
     time_log = {"start": None, "ready": None}
     bot = discord.Bot()
 
@@ -28,12 +28,12 @@ if __name__ == "__main__":
             status= discord.Status.do_not_disturb,
             activity= discord.Activity(
                 type= discord.ActivityType.playing,
-                name= "with missiles."
+                name= "with your life."
             )
         )
 
         # Logging
         time_log["ready"] = round(time.time() - time_log["start"], 4)
-        print(f"Bot is online as {bot.user}, startup took {time_log['ready']} seconds")
+        print(f"Active as {bot.user}, took {time_log['ready']}s")
     
     bot.run(TOKEN)
