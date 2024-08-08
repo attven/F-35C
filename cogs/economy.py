@@ -13,6 +13,7 @@ def account_add(user):
     with sqlite3.connect(config["db"]["economy"]) as conn:
         with conn:
             conn.execute("INSERT INTO accounts VALUES (?, ?)", (user, 100))
+            conn.execute("INSERT INTO daily VALUES (?, ?)", (user, 0))
 
 # Check if account exists
 def is_account_exist(user):
@@ -56,6 +57,7 @@ class Economy(commands.Cog):
             with conn:
                 conn.execute("CREATE TABLE IF NOT EXISTS accounts (user INTEGER, balance INTEGER)")
                 conn.execute("CREATE TABLE IF NOT EXISTS transactions (sender INTEGER, receiver INTEGER, amount INTEGER, timestamp INTEGER)")
+                conn.execute("CREATE TABLE IF NOT EXISTS daily (user INTEGER, timestamp INTEGER)")
     
     # Check account balance
     @discord.slash_command(name= "balance", description= "Check your balance")
@@ -68,6 +70,7 @@ class Economy(commands.Cog):
             color= discord.Color.brand_green()
         )
         embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
         await ctx.respond(embed= embed)
         stats.log_command("balance", ctx.author.id, ctx.channel.id, ctx.guild.id)
     
@@ -87,7 +90,7 @@ class Economy(commands.Cog):
 
             await ctx.respond(embed= embed)
             stats.log_command("transfer", ctx.author.id, ctx.channel.id, ctx.guild.id)
-            stats.log_transaction(ctx.author.id, user.id, amount, datetime.datetime.now())
+            stats.log_transaction(ctx.author.id, user.id, amount)
     
         else:
             embed = discord.Embed(
@@ -99,6 +102,11 @@ class Economy(commands.Cog):
 
             await ctx.respond(embed= embed)
             stats.log_command("transfer", ctx.author.id, ctx.channel.id, ctx.guild.id)
+
+    # Claim daily reward
+    @discord.slash_command(name= "daily", description= "Claim your daily reward")
+    async def daily(self, ctx: discord.ApplicationContext):
+        is_account_exist(ctx.author.id)
 
 def setup(bot):
     bot.add_cog(Economy(bot))
