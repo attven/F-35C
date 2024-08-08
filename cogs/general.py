@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from main import footer_text
 
-from scripts.stats import Statistics
+from scripts.statistics import Statistics
 stats = Statistics()
 
 class General(commands.Cog):

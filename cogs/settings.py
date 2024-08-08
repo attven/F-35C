@@ -2,7 +2,7 @@ import discord, sqlite3, json
 from discord.ext import commands
 from main import footer_text
 
-from scripts.stats import Statistics
+from scripts.statistics import Statistics
 stats = Statistics()
 
 with open("./config.json", "r") as f:
@@ -52,6 +52,7 @@ class Settings(commands.Cog):
                     )
                     .set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
                     )
+                    stats.log_command("mod_channel", ctx.author.id, ctx.channel.id, ctx.guild.id)
         
         # Toggle mod logging
         @settings.command(name= "mod_logging", description= "Toggle mod logging")

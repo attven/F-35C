@@ -2,7 +2,7 @@ import discord, sqlite3, json
 from discord.ext import commands
 from main import footer_text
 
-from scripts.stats import Statistics
+from scripts.statistics import Statistics
 stats = Statistics()
 
 with open("./config.json", "r") as f:
@@ -45,6 +45,7 @@ class Moderation(commands.Cog):
             embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
 
             await self.bot.get_channel(mod_channel).send(embed= embed)
+            stats.log_event(f"message sent by {message.author.id} deleted in {message.channel.id}")
     
     # Log edited messages
     @commands.Cog.listener()
@@ -65,7 +66,7 @@ class Moderation(commands.Cog):
             embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
         
             await self.bot.get_channel(mod_channel).send(embed= embed)
-
+            stats.log_event(f"message sent by {before.author.id} edited in {before.channel.id}")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
