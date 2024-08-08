@@ -36,17 +36,17 @@ class Moderation(commands.Cog):
         if is_logging_enabled(self, message.guild.id):
             mod_channel = get_mod_channel(self, message.guild.id)
             embed = discord.Embed(
-                title= "Deleted a message",
+                title= "Deleted by user",
                 color= discord.Color.brand_red()
             )
             embed.set_author(name= message.author.name, icon_url= message.author.avatar.url)
-            embed.add_field(name= "Content:", value= message.content, inline= False)
+            embed.add_field(name= "Message:", value= message.content, inline= False)
 
-            embed.add_field(name= "Channel:", value= message.channel.mention, inline= False)
+            embed.add_field(name= "In", value= message.channel.mention, inline= False)
             embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
 
             await self.bot.get_channel(mod_channel).send(embed= embed)
-            stats.log_event(f"message sent by {message.author.id} deleted in {message.channel.id}")
+            stats.log_event(f"sent by {message.author.id} in {message.channel.id}")
     
     # Log edited messages
     @commands.Cog.listener()
@@ -57,18 +57,18 @@ class Moderation(commands.Cog):
         if is_logging_enabled(self, before.guild.id):
             mod_channel = get_mod_channel(self, before.guild.id)
             embed = discord.Embed(
-                title= "Edited a message",
+                title= "Edited by user",
                 color= discord.Color.brand_red()
             )
             embed.set_author(name= before.author.name, icon_url= before.author.avatar.url)
-            embed.add_field(name= "Before:", value= before.content, inline= True)
-            embed.add_field(name= "After:", value= after.content, inline= True)
+            embed.add_field(name= "Original:", value= before.content, inline= True)
+            embed.add_field(name= "Now:", value= after.content, inline= True)
 
-            embed.add_field(name= "Channel:", value= before.channel.mention, inline= False)
+            embed.add_field(name= "In", value= before.channel.mention, inline= False)
             embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
         
             await self.bot.get_channel(mod_channel).send(embed= embed)
-            stats.log_event(f"message sent by {before.author.id} edited in {before.channel.id}")
+            stats.log_event(f"sent by {before.author.id} in {before.channel.id}")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
