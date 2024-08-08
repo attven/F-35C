@@ -1,46 +1,104 @@
-import discord, sqlite3
+import discord, sqlite3, json, datetime
 from discord.ext import commands
 from main import footer_text
 
 from scripts.statistics import Statistics
 stats = Statistics()
 
+with open("./config.json", "r") as f:
+    config = json.load(f)
+
+# Add account
+def account_add(user):
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            conn.execute("INSERT INTO accounts VALUES (?, ?)", (user, 100))
+
+# Check if account exists
+def is_account_exist(user):
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            cursor = conn.execute("SELECT * FROM accounts WHERE user = ?", (user,))
+            if cursor.fetchone() is None:
+                account_add(user)
+                return False
+            else:
+                return True
+            
+# Get balance
+def get_balance(user):
+    is_account_exist(user)
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            cursor = conn.execute("SELECT balance FROM accounts WHERE user = ?", (user,))
+            return cursor.fetchone()[0]
+
+# Transfer money
+def transfer(sender, receiver, amount):
+    is_account_exist(sender)
+    is_account_exist(receiver)
+    sender_balance = get_balance(sender)
+
+    if sender_balance < amount:
+        return "insufficient"
+
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            conn.execute("UPDATE accounts SET balance = ? WHERE user = ?", (sender_balance - amount, sender))
+            conn.execute("UPDATE accounts SET balance = ? WHERE user = ?", (get_balance(receiver) + amount, receiver))
+            return "success"
+
 class Economy(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.db_name = "database/economy.db"
 
-        with sqlite3.connect(self.db_name) as conn:
+        with sqlite3.connect(config["db"]["economy"]) as conn:
             with conn:
-                conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, balance INTEGER)")
+                conn.execute("CREATE TABLE IF NOT EXISTS accounts (user INTEGER, balance INTEGER)")
+                conn.execute("CREATE TABLE IF NOT EXISTS transactions (sender INTEGER, receiver INTEGER, amount INTEGER, timestamp INTEGER)")
     
-    def is_account_exists(self, user_id):
-        with sqlite3.connect(self.db_name) as conn:
-            with conn:
-                cursor = conn.execute("SELECT * FROM users WHERE id = ?", (user_id))
-                if cursor.fetchone() is None:
-                    self.create_account(user_id)
-    
-    def create_account(self, user_id):
-        with sqlite3.connect(self.db_name) as conn:
-            with conn:
-                conn.execute("INSERT INTO users VALUES (?, ?)", (user_id, 0))
-
+    # Check account balance
     @discord.slash_command(name= "balance", description= "Check your balance")
     async def balance(self, ctx: discord.ApplicationContext):
-        self.is_account_exists(ctx.author.id)
-        with sqlite3.connect(self.db_name) as conn:
-            with conn:
-                cursor = conn.execute("SELECT balance FROM users WHERE id = ?", (ctx.author.id))
-                balance = cursor.fetchone()[0]
-                await ctx.respond(embed= discord.Embed(
-                    title= "Balance",
-                    description= f"Your account balance: ${balance}",
-                    color= discord.Color.brand_green()
-                )
-                .set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
-                )
-                stats.log_command("balance", ctx.author.id, ctx.channel.id, ctx.guild.id)
+        is_account_exist(ctx.author.id)
+
+        embed = discord.Embed(
+            title= "Balance",
+            description= f"Your balance is {get_balance(ctx.author.id)}",
+            color= discord.Color.brand_green()
+        )
+        embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+        await ctx.respond(embed= embed)
+        stats.log_command("balance", ctx.author.id, ctx.channel.id, ctx.guild.id)
     
+    # Transfer money
+    @discord.slash_command(name= "transfer", description= "Transfer money to another user")
+    async def transfer(self, ctx: discord.ApplicationContext, user: discord.User, amount: int):
+        is_account_exist(ctx.author.id)
+        is_account_exist(user.id)
+
+        if transfer(ctx.author.id, user.id, amount) == "success":
+            embed = discord.Embed(
+                title= "Transfer funds",
+                description= f"You have transferred {amount} to {user.mention}",
+                color= discord.Color.brand_green()
+            )
+            embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
+            await ctx.respond(embed= embed)
+            stats.log_command("transfer", ctx.author.id, ctx.channel.id, ctx.guild.id)
+            stats.log_transaction(ctx.author.id, user.id, amount, datetime.datetime.now())
+    
+        else:
+            embed = discord.Embed(
+                title= "Transfer funds",
+                description= f"You do not have enough money to transfer {amount} to {user.mention}",
+                color= discord.Color.brand_green()
+            )
+            embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
+            await ctx.respond(embed= embed)
+            stats.log_command("transfer", ctx.author.id, ctx.channel.id, ctx.guild.id)
+
 def setup(bot):
     bot.add_cog(Economy(bot))

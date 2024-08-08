@@ -2,11 +2,13 @@
     "extensions": [
         "general",
         "settings",
-        "moderation"
+        "moderation",
+        "economy"
     ],
     "admins": [],
     "db": {
         "settings": "database/settings.db",
-        "statistics": "database/statistics.db"
+        "statistics": "database/statistics.db",
+        "economy": "database/economy.db"
     }
 }
