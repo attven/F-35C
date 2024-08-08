@@ -3,5 +3,9 @@
         "general",
         "settings"
     ],
-    "admins": []
+    "admins": [],
+    "db": {
+        "settings": "database/settings.db",
+        "statistics": "database/statistics.db"
+    }
 }

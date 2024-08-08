@@ -7,7 +7,6 @@ class Statistics:
         with sqlite3.connect(self.db_name) as conn:
             with conn:
                 conn.execute("CREATE TABLE IF NOT EXISTS commands (command TEXT, user INTEGER, channel INTEGER, guild INTEGER, timestamp TEXT)")
-                print("Stats database created")
     
     def log_command(self, command, user, channel, guild):
         timestamp = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
