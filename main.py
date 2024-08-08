@@ -13,7 +13,7 @@ with open("./config.json", "r") as f:
 
 if __name__ == "__main__":
     print(f"pwd: {os.getcwd()}")
-    bot = discord.Bot()
+    bot = discord.Bot(intents=discord.Intents.all())
 
     # Load commands
     for extension in config["extensions"]:

@@ -1,7 +1,8 @@
 {
     "extensions": [
         "general",
-        "settings"
+        "settings",
+        "moderation"
     ],
     "admins": [],
     "db": {
