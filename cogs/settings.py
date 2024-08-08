@@ -5,7 +5,7 @@ from main import footer_text
 from scripts.stats import Statistics
 stats = Statistics()
 
-# Apologies for the nested code, I'm afraid this is the only way to make it work.
+# Apologies for the nested code
 
 class Settings(commands.Cog):
     def __init__(self, bot):
@@ -15,7 +15,7 @@ class Settings(commands.Cog):
         # Create the database if it doesn't exist
         with sqlite3.connect(self.db_name) as conn:
             with conn:
-                conn.execute("CREATE TABLE IF NOT EXISTS settings (guild INTEGER, mod_channel INTEGER)")
+                conn.execute("CREATE TABLE IF NOT EXISTS moderation (guild INTEGER, mod_channel INTEGER, logging BOOLEAN)")
     
         # All the commands in this bot are under the settings group
         settings = bot.create_group("settings")
@@ -25,8 +25,16 @@ class Settings(commands.Cog):
         async def mod_channel(ctx: discord.ApplicationContext, channel: discord.TextChannel):
             with sqlite3.connect(self.db_name) as conn:
                 with conn:
-                    conn.execute("INSERT INTO settings VALUES (?, ?)", (ctx.guild.id, channel.id))
-                    ctx.respond(embed= discord.Embed(
+                    # Check if the guild is already in the database
+                    cursor = conn.execute("SELECT * FROM moderation WHERE guild = ?", (ctx.guild.id,))
+                    if cursor.fetchone() is None:
+                        # Add the guild to the database
+                        conn.execute("INSERT INTO moderation VALUES (?, ?, ?)", (ctx.guild.id, channel.id, False))
+                    else:
+                        # Update the guild in the database
+                        conn.execute("UPDATE settings SET mod_channel = ? WHERE guild = ?", (channel.id, ctx.guild.id))
+
+                    await ctx.respond(embed= discord.Embed(
                         title= "Mod channel set",
                         description= f"The mod channel has been set to {channel.mention}",
                         color= discord.Color.brand_green()
