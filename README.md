@@ -7,6 +7,8 @@ accompanied by usage of cogs - which makes adding, updating and removing extensi
 
 To get started, simply click **Use this template**, and select either **Open in Codespace** or **[Create a new repository](https://github.com/new?template_name=F-35C&template_owner=attventures)**.
 
+Quick links: **[Getting Started](#getting-started)**
+
 ## Features
 
 ### Default
@@ -25,6 +27,7 @@ Features that are enabled by default, which does not require modifying the codeb
   - dogs
   - hamsters
   - http cat
+ - Per-server settings (in progress)
 
 ### Optional
 
@@ -32,6 +35,18 @@ These features requires you to input tokens, or make changes (adding/modifying) 
 
 - AI chats in DMs and channels specified as AI channels. **Requires you to input your own Groq API key**.
 - Evaluate each message's toxicity and insult score, and take automated actions. **Requires you to enter your own Google Cloud token with Perspective API enabled**.
+
+## Getting started
+
+### Installation and running
+
+1. Create an application at the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Get the token for your bot. **Please keep this at a safe place, Discord will notify you if it's web scrapers found your TOKEN online. If so, your existing token will no longer work, and you'll need to generate a new one**.
+3. On this repo page, click on **Use this template**, then select **[Create a new repository](https://github.com/new?template_name=F-35C&template_owner=attventures)**.
+4. Enter the details of your new repo.
+5. Clone your repo into your local machine
+6. Inside the project directory, open `.env` and enter your bot token
+7. Run the `main.py` script to start the bot
 
 ----
 
