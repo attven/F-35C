@@ -1,6 +1,5 @@
-import os, discord, time, json
+import os, discord, json
 from dotenv import load_dotenv
-from discord.ext import commands, bridge
 os.system('cls' if os.name == 'nt' else 'clear')
 
 load_dotenv()
@@ -11,13 +10,11 @@ with open("./config.json", "r") as f:
 
 if __name__ == "__main__":
     print(f"pwd: {os.getcwd()}")
-    time_log = {"start": None, "ready": None}
     bot = discord.Bot()
 
     # Load commands
     for extension in config["extensions"]:
         bot.load_extension(f"scripts.cogs.{extension}")
-
 
     @bot.event
     async def on_ready():
@@ -30,9 +27,6 @@ if __name__ == "__main__":
             )
         )
 
-        # Logging
-        print(f"Bot is online as {bot.user}")
-        time_log["ready"] = round(time.time() - time_log["start"], 4)
-        print(f"Active as {bot.user}, took {time_log['ready']}s")
+        print(f"Active as {bot.user}")
     
     bot.run(TOKEN)
