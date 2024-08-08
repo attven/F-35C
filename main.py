@@ -2,6 +2,9 @@ import os, discord, json
 from dotenv import load_dotenv
 os.system('cls' if os.name == 'nt' else 'clear')
 
+# Change this to your own footer text
+footer_text = "F-35C by attventures"
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -14,7 +17,7 @@ if __name__ == "__main__":
 
     # Load commands
     for extension in config["extensions"]:
-        bot.load_extension(f"scripts.cogs.{extension}")
+        bot.load_extension(f"cogs.{extension}")
 
     @bot.event
     async def on_ready():
