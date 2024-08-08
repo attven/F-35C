@@ -1,6 +1,6 @@
 <img width="450" alt="F35C text" src="https://github.com/user-attachments/assets/cda80099-a8c6-45d1-9f8a-1fac603cab3d">
 
-# Generic, multirole Discord bot
+# Generic, multi-role Discord bot
 
 F-35C is designed for you to easily self-host, and use as a template for your own Discord bot project. The codebase is written to be straightforward, clear, and self-explaining,
 accompanied by usage of cogs - which makes adding, updating and removing extensions easier and achievable with no downtime.
