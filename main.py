@@ -10,16 +10,12 @@ with open("./config.json", "r") as f:
     config = json.load(f)
 
 if __name__ == "__main__":
-    print(f"Working directory: {os.getcwd()}")
-    time_log = {"start": None, "ready": None}
     bot = discord.Bot()
 
     # Load commands
     for extension in config["extensions"]:
         bot.load_extension(f"scripts.cogs.{extension}")
 
-    # On bot startup
-    time_log["start"] = time.time()
 
     @bot.event
     async def on_ready():
@@ -33,7 +29,6 @@ if __name__ == "__main__":
         )
 
         # Logging
-        time_log["ready"] = round(time.time() - time_log["start"], 4)
-        print(f"Bot is online as {bot.user}, startup took {time_log['ready']} seconds")
+        print(f"Bot is online as {bot.user}")
     
     bot.run(TOKEN)
