@@ -36,7 +36,7 @@ class Moderation(commands.Cog):
         if is_logging_enabled(self, message.guild.id):
             mod_channel = get_mod_channel(self, message.guild.id)
             embed = discord.Embed(
-                title= "Edited a message",
+                title= "Deleted a message",
                 color= discord.Color.brand_red()
             )
             embed.set_author(name= message.author.name, icon_url= message.author.avatar.url)
@@ -57,7 +57,7 @@ class Moderation(commands.Cog):
         if is_logging_enabled(self, before.guild.id):
             mod_channel = get_mod_channel(self, before.guild.id)
             embed = discord.Embed(
-                title= "Deleted a message",
+                title= "Edited a message",
                 color= discord.Color.brand_red()
             )
             embed.set_author(name= before.author.name, icon_url= before.author.avatar.url)
