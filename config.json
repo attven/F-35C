@@ -3,7 +3,8 @@
         "general",
         "settings",
         "moderation",
-        "economy"
+        "economy",
+        "fun"
     ],
     "admins": [],
     "db": {

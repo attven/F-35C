@@ -29,6 +29,7 @@ class Moderation(commands.Cog):
 
     # Log deleted messages
     @commands.Cog.listener()
+    @commands.has_permissions(administrator= True)
     async def on_message_delete(self, message: discord.Message):
         if message.author.bot:
             return
@@ -49,6 +50,7 @@ class Moderation(commands.Cog):
     
     # Log edited messages
     @commands.Cog.listener()
+    @commands.has_permissions(administrator= True)
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if before.author.bot:
             return
