@@ -1,4 +1,6 @@
 {
-    "extensions": [],
+    "extensions": [
+        "general"
+    ],
     "admins": []
 }
