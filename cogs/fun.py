@@ -8,8 +8,8 @@ class Fun(commands.Cog):
         # All the commands in this bot are under the fun group
         fun = bot.create_group("fun", "Fun commands")
 
-        @fun.command(name= "http_cat", description= "HTTTP status code cats")
-        async def http_cat(ctx: discord.ApplicationContext, code: discord.Option(int, "HTTP status code")): # type: ignore
+        @fun.command(name= "httpcat", description= "HTTP status code cats")
+        async def http_cat(ctx: discord.ApplicationContext, code: discord.Option(int, "Status code")): # type: ignore
             await ctx.respond(f"https://http.cat/{code}")
 
 def setup(bot):
