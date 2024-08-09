@@ -39,6 +39,7 @@ class Settings(commands.Cog):
 
         # Set the mod channel
         @settings.command(name= "mod_channel", description= "Set the mod channel")
+        @commands.has_permissions(administrator= True)
         async def mod_channel(ctx: discord.ApplicationContext, channel: discord.TextChannel):
             with sqlite3.connect(self.db_name) as conn:
                 with conn:
@@ -56,6 +57,7 @@ class Settings(commands.Cog):
         
         # Toggle mod logging
         @settings.command(name= "mod_logging", description= "Toggle mod logging")
+        @commands.has_permissions(administrator= True)
         async def mod_logging(
             ctx: discord.ApplicationContext,
             toggle: discord.Option(name= "toggle", description= "Toggle mod logging", choices= [
