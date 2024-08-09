@@ -34,6 +34,20 @@ def get_balance(user):
             cursor = conn.execute("SELECT balance FROM accounts WHERE user = ?", (user,))
             return cursor.fetchone()[0]
 
+def get_daily(user):
+    is_account_exist(user)
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            cursor = conn.execute("SELECT timestamp FROM daily WHERE user = ?", (user,))
+            last_daily = cursor.fetchone()[0]
+
+            if last_daily == 0 or datetime.datetime.now().timestamp() - last_daily > 86400:
+                conn.execute("UPDATE daily SET timestamp = ? WHERE user = ?", (datetime.datetime.now().timestamp(), user))
+                conn.execute("UPDATE accounts SET balance = ? WHERE user = ?", (get_balance(user) + 100, user))
+                return "success"
+            else:
+                return "cooldown"
+
 # Transfer money
 def transfer(sender, receiver, amount):
     is_account_exist(sender)
@@ -106,7 +120,30 @@ class Economy(commands.Cog):
     # Claim daily reward
     @discord.slash_command(name= "daily", description= "Claim your daily paycheck")
     async def daily(self, ctx: discord.ApplicationContext):
-        is_account_exist(ctx.author.id)
+        if get_daily(ctx.author.id) == "success":
+            embed = discord.Embed(
+                title= "Daily paycheck",
+                description= f"Claimed daily check",
+                color= discord.Color.brand_green()
+            )
+            embed.add_field(name= "Balance", value= f"{get_balance(ctx.author.id)}", inline= True)
+            embed.add_field(name= "Daily reward", value= "100", inline= True)
+            embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
+            await ctx.respond(embed= embed)
+            stats.log_command("daily", ctx.author.id, ctx.channel.id, ctx.guild.id)
+            stats.log_event("claimed daily cash", ctx.author.id, ctx.channel.id, ctx.guild.id)
+        
+        else:
+            embed = discord.Embed(
+                title= "Daily paycheck",
+                description= f"You have already claimed your daily check. Try again later.",
+                color= discord.Color.brand_green()
+            )
+            embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
+            await ctx.respond(embed= embed)
+            stats.log_command("daily", ctx.author.id, ctx.channel.id, ctx.guild.id)
 
 def setup(bot):
     bot.add_cog(Economy(bot))
