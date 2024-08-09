@@ -117,7 +117,7 @@ class Economy(commands.Cog):
             await ctx.respond(embed= embed)
             stats.log_command("transfer", ctx.author.id, ctx.channel.id, ctx.guild.id)
 
-    # Claim daily reward
+    # Claim daily paycheck
     @discord.slash_command(name= "daily", description= "Claim your daily paycheck")
     async def daily(self, ctx: discord.ApplicationContext):
         if get_daily(ctx.author.id) == "success":
