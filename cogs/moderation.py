@@ -64,7 +64,7 @@ class Moderation(commands.Cog):
             embed.add_field(name= "Original:", value= before.content, inline= True)
             embed.add_field(name= "Now:", value= after.content, inline= True)
 
-            embed.add_field(name= "In", value= before.channel.mention, inline= False)
+            embed.add_field(name= "Where", value= before.jump_url, inline= False)
             embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
         
             await self.bot.get_channel(mod_channel).send(embed= embed)
