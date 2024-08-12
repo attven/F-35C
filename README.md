@@ -18,6 +18,7 @@ Features that are enabled by default, which does not require modifying the codeb
 Default:
 
 - Basic **economy**
+  - Daily paycheck
   - Transfer funds
 - Basic **fun**
   - http cat
