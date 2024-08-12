@@ -48,6 +48,19 @@ def get_daily(user):
             else:
                 return "cooldown"
 
+def get_leaderboard():
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            cursor = conn.execute("SELECT user, balance FROM accounts ORDER BY balance DESC LIMIT 10")
+            return cursor.fetchall()
+
+def deposit(user, amount):
+    is_account_exist(user)
+    with sqlite3.connect(config["db"]["economy"]) as conn:
+        with conn:
+            conn.execute("UPDATE accounts SET balance = ? WHERE user = ?", (get_balance(user) + amount, user))
+            return "success"
+
 # Transfer money
 def transfer(sender, receiver, amount):
     is_account_exist(sender)
@@ -132,7 +145,7 @@ class Economy(commands.Cog):
 
             await ctx.respond(embed= embed)
             stats.log_command("daily", ctx.author.id, ctx.channel.id, ctx.guild.id)
-            stats.log_event("claimed daily cash", ctx.author.id, ctx.channel.id, ctx.guild.id)
+            stats.log_event("claimed daily cash")
         
         else:
             embed = discord.Embed(
@@ -144,6 +157,36 @@ class Economy(commands.Cog):
 
             await ctx.respond(embed= embed)
             stats.log_command("daily", ctx.author.id, ctx.channel.id, ctx.guild.id)
+
+    # Add money to account
+    @discord.slash_command(name= "deposit", description= "Add money to someone's account")
+    @commands.is_owner()
+    async def deposit(self, ctx: discord.ApplicationContext, user: discord.User, amount: int):
+        is_account_exist(user.id)
+        deposit(user.id, amount)
+        embed = discord.Embed(
+            title= "Deposit funds",
+            description= f"You have deposited {amount} to {user.mention}",
+            color= discord.Color.brand_green()
+        )
+        embed.set_footer(text= footer_text, icon_url= self.bot.user.avatar.url)
+
+        await ctx.respond(embed= embed)
+        stats.log_command("deposit", ctx.author.id, ctx.channel.id, ctx.guild.id)
+    
+    # Leaderboard
+    @discord.slash_command(name="leaderboard", description="Check the top 10 richest users")
+    async def leaderboard(self, ctx: discord.ApplicationContext):
+        leaderboard_data = get_leaderboard()
+        
+        embed = discord.Embed(title="Leaderboard", color=discord.Color.gold())
+        for index, (user_id, balance) in enumerate(leaderboard_data, start=1):
+            user = await self.bot.fetch_user(user_id)
+            embed.add_field(name=f"{index}. {user.name}", value=f"Balance: {balance}", inline=False)
+        
+        embed.set_footer(text=footer_text, icon_url=self.bot.user.avatar.url)
+        await ctx.respond(embed=embed)
+        stats.log_command("leaderboard", ctx.author.id, ctx.channel.id, ctx.guild.id)
 
 def setup(bot):
     bot.add_cog(Economy(bot))
